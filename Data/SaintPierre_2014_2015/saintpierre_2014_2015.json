@@ -1,0 +1,84 @@
+[
+    {
+        "transaction_id": 1465989663,
+        "sensor_id": "WD_MeanUnitVector",
+        "trans_double_locality_latitude": -21.313922,
+        "trans_double_locality_longitude": 55.451069,
+        "trans_text_locality_name": "Saint Pierre",
+        "date_system_timeEnd": "2017-01-20T09:59:00Z",
+        "date_system_timeStart": "2012-10-11T10:33:00Z",
+        "transaction_name": "Data EDF - Saint Pierre La Valle - Campaign 2"
+    },
+    {
+        "transaction_id": 1465989663,
+        "sensor_id": "Text_Avg",
+        "trans_double_locality_latitude": -21.313922,
+        "trans_double_locality_longitude": 55.451069,
+        "trans_text_locality_name": "Saint Pierre",
+        "text_application_captor": "Temp",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:59:00Z",
+        "date_system_timeStart": "2012-10-11T10:33:00Z",
+        "transaction_name": "Data EDF - Saint Pierre La Valle - Campaign 2"
+    },
+    {
+        "transaction_id": 1465989663,
+        "sensor_id": "WS_Mean",
+        "trans_double_locality_latitude": -21.313922,
+        "trans_double_locality_longitude": 55.451069,
+        "trans_text_locality_name": "Saint Pierre",
+        "text_application_captor": "WS",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:59:00Z",
+        "date_system_timeStart": "2012-10-11T10:33:00Z",
+        "transaction_name": "Data EDF - Saint Pierre La Valle - Campaign 2"
+    },
+    {
+        "transaction_id": 1465989663,
+        "sensor_id": "RH_Avg",
+        "trans_double_locality_latitude": -21.313922,
+        "trans_double_locality_longitude": 55.451069,
+        "trans_text_locality_name": "Saint Pierre",
+        "text_application_captor": "RH",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:59:00Z",
+        "date_system_timeStart": "2012-10-11T10:33:00Z",
+        "transaction_name": "Data EDF - Saint Pierre La Valle - Campaign 2"
+    },
+    {
+        "transaction_id": 1465989663,
+        "sensor_id": "FD_Avg",
+        "trans_double_locality_latitude": -21.313922,
+        "trans_double_locality_longitude": 55.451069,
+        "trans_text_locality_name": "Saint Pierre",
+        "text_application_captor": "DHI",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:59:00Z",
+        "date_system_timeStart": "2012-10-11T10:33:00Z",
+        "transaction_name": "Data EDF - Saint Pierre La Valle - Campaign 2"
+    },
+    {
+        "transaction_id": 1465989663,
+        "sensor_id": "Patm_Avg",
+        "trans_double_locality_latitude": -21.313922,
+        "trans_double_locality_longitude": 55.451069,
+        "trans_text_locality_name": "Saint Pierre",
+        "text_application_captor": "Patm",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:59:00Z",
+        "date_system_timeStart": "2012-10-11T10:33:00Z",
+        "transaction_name": "Data EDF - Saint Pierre La Valle - Campaign 2"
+    },
+    {
+        "transaction_id": 1465989663,
+        "sensor_id": "FG_Avg",
+        "trans_double_locality_latitude": -21.313922,
+        "trans_double_locality_longitude": 55.451069,
+        "trans_text_locality_name": "Saint Pierre",
+        "text_application_captor": "GHI",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:59:00Z",
+        "date_system_timeStart": "2012-10-11T10:33:00Z",
+        "transaction_name": "Data EDF - Saint Pierre La Valle - Campaign 2"
+    }
+]

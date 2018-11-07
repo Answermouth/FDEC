@@ -1,0 +1,87 @@
+[
+    {
+        "transaction_id": 1465986423,
+        "sensor_id": "WD_MeanUnitVector",
+        "trans_double_locality_latitude": -20.91731,
+        "trans_double_locality_longitude": 55.476445,
+        "trans_text_locality_name": "Moufia Bois de Nefles",
+        "date_system_timeEnd": "2017-01-20T09:29:00Z",
+        "date_system_timeStart": "2012-10-11T10:31:00Z",
+        "transaction_name": "Data EDF - Moufia Bois De Nefles - Campaign 3"
+    },
+    {
+        "transaction_id": 1465986423,
+        "sensor_id": "Text_Avg",
+        "trans_double_locality_latitude": -20.91731,
+        "trans_double_locality_longitude": 55.476445,
+        "trans_text_locality_name": "Moufia Bois de Nefles",
+        "text_application_captor": "Temp",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:29:00Z",
+        "date_system_timeStart": "2012-10-11T10:31:00Z",
+        "transaction_name": "Data EDF - Moufia Bois De Nefles - Campaign 3"
+    },
+    {
+        "transaction_id": 1465986423,
+        "sensor_id": "WS_Mean",
+        "trans_double_locality_latitude": -20.91731,
+        "trans_double_locality_longitude": 55.476445,
+        "trans_text_locality_name": "Moufia Bois de Nefles",
+        "text_application_captor": "WS",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:29:00Z",
+        "date_system_timeStart": "2012-10-11T10:31:00Z",
+        "transaction_name": "Data EDF - Moufia Bois De Nefles - Campaign 3"
+    },
+    {
+        "transaction_id": 1465986423,
+        "sensor_id": "FD_Avg",
+        "trans_double_locality_latitude": -20.91731,
+        "trans_double_locality_longitude": 55.476445,
+        "trans_text_locality_name": "Moufia Bois de Nefles",
+        "text_application_captor": "DHI",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:29:00Z",
+        "date_system_timeStart": "2012-10-11T10:31:00Z",
+        "transaction_name": "Data EDF - Moufia Bois De Nefles - Campaign 3"
+    },
+    {
+        "transaction_id": 1465986423,
+        "sensor_id": "RH_Avg",
+        "trans_double_locality_latitude": -20.91731,
+        "trans_double_locality_longitude": 55.476445,
+        "trans_text_locality_name": "Moufia Bois de Nefles",
+        "text_application_captor": "RH",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:29:00Z",
+        "date_system_timeStart": "2012-10-11T10:31:00Z",
+        "transaction_name": "Data EDF - Moufia Bois De Nefles - Campaign 3"
+    },
+    {
+        "transaction_id": 1465986423,
+        "sensor_id": "Patm_Avg",
+        "trans_double_locality_latitude": -20.91731,
+        "trans_double_locality_longitude": 55.476445,
+        "trans_text_locality_name": "Moufia Bois de Nefles",
+        "text_application_captor": "Patm",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:29:00Z",
+        "date_system_timeStart": "2012-10-11T10:31:00Z",
+        "transaction_name": "Data EDF - Moufia Bois De Nefles - Campaign 3"
+    },
+    {
+        "transaction_id": 1465986423,
+        "sensor_id": "FG_Avg",
+        "trans_double_locality_latitude": -20.91731,
+        "trans_double_locality_longitude": 55.476445,
+        "trans_text_locality_name": "Moufia Bois de Nefles",
+        "text_application_captor": "GHI",
+        "text_quality_link": "DHI-FD_Avg",
+        "text_quality_measure": "BSRN200,BSRN224",
+        "text_quality_sensor": "GHI",
+        "bool_application_show": true,
+        "date_system_timeEnd": "2017-01-20T09:29:00Z",
+        "date_system_timeStart": "2012-10-11T10:31:00Z",
+        "transaction_name": "Data EDF - Moufia Bois De Nefles - Campaign 3"
+    }
+]
