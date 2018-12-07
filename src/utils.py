@@ -7,7 +7,8 @@ from joblib import Parallel, delayed
 import multiprocessing
 
 ONE_HOUR = np.timedelta64(1, 'h')
-ONE_YEAR = np.timedelta64(365, 'D')
+ONE_MONTH = np.timedelta64(1, 'M')
+ONE_YEAR = np.timedelta64(1, 'Y')
 
 datatype = [('Timestamp', np.datetime64('1970-01-01T00:00:00')),
             ('FD_Avg', np.float32),
@@ -19,7 +20,8 @@ datatype = [('Timestamp', np.datetime64('1970-01-01T00:00:00')),
             ('WS_Mean', np.float32)]
 COLUMNS_WITH_TIMESTAMP = ['Timestamp', 'FD_Avg', 'FG_Avg', 'Patm_Avg', 'RH_Avg', 'Text_Avg', 'WD_MeanUnitVector', 'WS_Mean']
 COLUMNS = ['FD_Avg', 'FG_Avg', 'Patm_Avg', 'RH_Avg', 'Text_Avg', 'WD_MeanUnitVector', 'WS_Mean']
-DATASETS = ["Moufia", "Possession", "SaintAndre", "SintLeu", "SaintPierre"]
+DATASETS = ["Moufia", "Possession", "SaintAndre", "SaintLeu", "SaintPierre"]
+# DATASETS = ["SaintLeu", "SaintPierre"]
 GRAPHS_PATH = '../graphs/'
 
 

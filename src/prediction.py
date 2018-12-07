@@ -6,8 +6,10 @@ from skopt import BayesSearchCV
 from skopt.space import Real, Integer, Categorical
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_validate, train_test_split
-from statsmodels.tsa.arima_model import ARIMA
+from sklearn import preprocessing
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 import matplotlib.pyplot as plt
+from pandas.plotting import autocorrelation_plot
 import datetime
 
 
@@ -76,30 +78,47 @@ def random_forest(attributes, prediction):
     print(simplify_scores(bayes_scores))
 
 
+def evaluate_model(model):
+    model_fit = model.fit(disp=0)
+    print(model_fit.summary())
+
+    # plot residual errors
+    residuals = pd.DataFrame(model_fit.resid)
+    residuals.plot()
+    residuals.plot(kind='kde')
+    print(residuals.describe())
+    # plt.show()
+
+
 def main():
     print("Start")
-    # avg_data = import_dataset(DATASETS[0], True)
+    avg_data = import_dataset(DATASETS[1], True)
     # prediction, attributes = create_prediction_datasets(avg_data, 5)
 
     # random_forest(attributes.drop(columns='Timestamp'), prediction)
 
     print('Training')
 
-    series = np.genfromtxt('../cachedData/test.csv', dtype=dtype, delimiter=',', names=True)
+    # series = np.genfromtxt('../cachedData/test.csv', dtype=dtype, delimiter=',', names=True)
 
-    print(series)
+    min_max_scaler = preprocessing.MinMaxScaler()
+    series = min_max_scaler.fit_transform(avg_data[COLUMN_TO_PREDICT].values.reshape(-1, 1))
+    COLUMNS.remove(COLUMN_TO_PREDICT)
+    exog = avg_data[COLUMNS]
 
-    model = ARIMA(series, order=(5, 1, 0))
-    model_fit = model.fit(disp=0)
-    print(model_fit.summary())
-    # plot residual errors
-    residuals = pd.DataFrame(model_fit.resid)
-    residuals.plot()
-    plt.show()
-    residuals.plot(kind='kde')
-    plt.show()
-    print(residuals.describe())
+    autocorrelation_plot(series)
+    # plt.show()
 
+    order = (5, 1, 1)
+    seasonal_order = (1, 1, 1, 24)
+    print('ARIMA')
+    # evaluate_model(SARIMAX(series, order=order))
+    print('ARIMA exog')
+    # evaluate_model(SARIMAX(series, order=order, exog=exog))
+    print('SARIMAX')
+    # evaluate_model(SARIMAX(series, order=order, seasonal_order=seasonal_order))
+    print('SARIMAX exog')
+    evaluate_model(SARIMAX(series, exog=exog, order=order, seasonal_order=seasonal_order))
 
 
 if __name__ == "__main__":
