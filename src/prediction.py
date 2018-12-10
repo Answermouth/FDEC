@@ -4,13 +4,16 @@ from src.utils import *
 import pandas as pd
 from skopt import BayesSearchCV
 from skopt.space import Real, Integer, Categorical
+from sklearn import preprocessing
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_validate, train_test_split
-from sklearn import preprocessing
+from sklearn.metrics import mean_squared_error, r2_score
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import matplotlib.pyplot as plt
 from pandas.plotting import autocorrelation_plot
 import datetime
+import warnings
+warnings.simplefilter("ignore")
 
 
 COLUMN_TO_PREDICT = 'FD_Avg'
@@ -90,9 +93,57 @@ def evaluate_model(model):
     # plt.show()
 
 
+def evaluate_model_prediction(series, exog=None, train_size=48, max_evals=1000, offset=0, order=(1, 0, 0), seasonal_order=(0, 0, 0, 0)):
+    warnings.simplefilter("ignore")
+    observations, predictions = [], []
+
+    start = min(train_size + offset, len(series)-max_evals-train_size)
+    end = min(train_size + max_evals + offset, len(series))
+    for i in range(start, end):
+        train = series[i-train_size:i]
+        if exog is not None:
+            exog_slice = exog[i-train_size:i]
+            print(exog_slice)
+            model = SARIMAX(train, exog=exog_slice, order=order, seasonal_order=seasonal_order,
+                            enforce_stationarity=False, enforce_invertibility=False)
+        else:
+            model = SARIMAX(train, order=order, seasonal_order=seasonal_order,
+                            enforce_stationarity=False, enforce_invertibility=False)
+        model_fit = model.fit(disp=0)
+        output = model_fit.forecast()
+        predictions.append(output[0])
+        observations.append(series[i - 1])
+
+    scoring = mean_squared_error(observations, predictions)
+
+    return scoring
+
+
+def cross_val(series, exog=None, k=10, train_size=48, order=(1, 0, 0), seasonal_order=(0, 0, 0, 0)):
+    # print("order:", order, "| seasonal order:", seasonal_order, "| train size:", train_size)
+    size = len(series)
+    chunck_size = int(size/10)
+
+    scores = Parallel(n_jobs=-1)(delayed(evaluate_model_prediction)(series, exog=exog, train_size=train_size, order=order,
+                                                                    seasonal_order=seasonal_order, offset=chunck_size*i,
+                                                                    max_evals=chunck_size) for i in range(k))
+    print("order:", order, "| seasonal order:", seasonal_order, "| mean MSE:", np.average(scores),
+          "| MSE std:", np.std(scores))
+
+
+def try_orders(series, exog=None):
+    orders = [
+        [1, 0, 0],
+        [2, 0, 0],
+        [3, 0, 0],
+        [4, 0, 0]
+    ]
+    Parallel(n_jobs=1)(delayed(cross_val)(series, train_size=100, order=order) for order in orders)
+
+
 def main():
     print("Start")
-    avg_data = import_dataset(DATASETS[1], True)
+
     # prediction, attributes = create_prediction_datasets(avg_data, 5)
 
     # random_forest(attributes.drop(columns='Timestamp'), prediction)
@@ -101,24 +152,30 @@ def main():
 
     # series = np.genfromtxt('../cachedData/test.csv', dtype=dtype, delimiter=',', names=True)
 
-    min_max_scaler = preprocessing.MinMaxScaler()
-    series = min_max_scaler.fit_transform(avg_data[COLUMN_TO_PREDICT].values.reshape(-1, 1))
+    # series = avg_data[COLUMN_TO_PREDICT].values.reshape(-1, 1)
     COLUMNS.remove(COLUMN_TO_PREDICT)
-    exog = avg_data[COLUMNS]
+    for dataset in DATASETS:
+        print(dataset)
+        avg_data = import_dataset(dataset, True)
+        min_max_scaler = preprocessing.MinMaxScaler()
+        series = min_max_scaler.fit_transform(avg_data[COLUMN_TO_PREDICT].values.reshape(-1, 1))
+        exog = avg_data[COLUMNS]
+        print(sum(series) / len(series))
 
-    autocorrelation_plot(series)
-    # plt.show()
+        cross_val(series)
+        print()
 
-    order = (5, 1, 1)
-    seasonal_order = (1, 1, 1, 24)
-    print('ARIMA')
-    # evaluate_model(SARIMAX(series, order=order))
-    print('ARIMA exog')
-    # evaluate_model(SARIMAX(series, order=order, exog=exog))
-    print('SARIMAX')
-    # evaluate_model(SARIMAX(series, order=order, seasonal_order=seasonal_order))
-    print('SARIMAX exog')
-    evaluate_model(SARIMAX(series, exog=exog, order=order, seasonal_order=seasonal_order))
+    for dataset in DATASETS:
+        print(dataset)
+        avg_data = import_dataset(dataset, True)
+        min_max_scaler = preprocessing.MinMaxScaler()
+        series = min_max_scaler.fit_transform(avg_data[COLUMN_TO_PREDICT].values.reshape(-1, 1))
+        exog = avg_data[COLUMNS]
+        print(sum(series) / len(series))
+
+        series = series[539:]
+        cross_val(series)
+        print()
 
 
 if __name__ == "__main__":

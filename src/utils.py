@@ -7,6 +7,7 @@ from joblib import Parallel, delayed
 import multiprocessing
 
 ONE_HOUR = np.timedelta64(1, 'h')
+ONE_DAY = np.timedelta64(1, 'D')
 ONE_MONTH = np.timedelta64(1, 'M')
 ONE_YEAR = np.timedelta64(1, 'Y')
 
