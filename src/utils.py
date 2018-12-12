@@ -21,8 +21,9 @@ datatype = [('Timestamp', np.datetime64('1970-01-01T00:00:00')),
             ('WS_Mean', np.float32)]
 COLUMNS_WITH_TIMESTAMP = ['Timestamp', 'FD_Avg', 'FG_Avg', 'Patm_Avg', 'RH_Avg', 'Text_Avg', 'WD_MeanUnitVector', 'WS_Mean']
 COLUMNS = ['FD_Avg', 'FG_Avg', 'Patm_Avg', 'RH_Avg', 'Text_Avg', 'WD_MeanUnitVector', 'WS_Mean']
+NEW_COLUMNS = ['Kb']
 DATASETS = ["Moufia", "Possession", "SaintAndre", "SaintLeu", "SaintPierre"]
-GRAPHS_PATH = '../graphs/'
+GRAPHS_PATH = '../graphs/cleaned/'
 
 
 def get_folder_name(dataset_name):
@@ -65,33 +66,56 @@ def average(timestamps, data, period=ONE_HOUR):
 
 
 def average_one_column_parallel(i, data, period):
-    print("\tAveraging " + COLUMNS[i])
+    columns = COLUMNS + NEW_COLUMNS
+    print("\tAveraging " + columns[i])
     if i == 0:
-        return average(data['Timestamp'], data[COLUMNS[i]], period)
+        return average(data['Timestamp'], data[columns[i]], period)
     else:
-        return average(data['Timestamp'], data[COLUMNS[i]], period)[1]
+        return average(data['Timestamp'], data[columns[i]], period)[1]
 
 
 def average_all_data(data, period=ONE_HOUR):
-    num_cores = multiprocessing.cpu_count()
-    results = Parallel(n_jobs=num_cores)(delayed(average_one_column_parallel)(i, data, period) for i in range(len(COLUMNS)))
+    columns = COLUMNS + NEW_COLUMNS
+    results = Parallel(n_jobs=-1)(delayed(average_one_column_parallel)(i, data, period) for i in range(len(columns)))
 
     averaged_data = {}
-    for i in range(len(COLUMNS)):
+    for i in range(len(columns)):
         if i == 0:
             averaged_data[COLUMNS_WITH_TIMESTAMP[0]] = results[0][0]
-            averaged_data[COLUMNS[0]] = results[0][1]
+            averaged_data[columns[0]] = results[0][1]
         else:
-            averaged_data[COLUMNS[i]] = results[i]
+            averaged_data[columns[i]] = results[i]
 
     return averaged_data
 
 
-def convert_to_data_frame(data):
+def convert_to_data_frame(data, columns=COLUMNS_WITH_TIMESTAMP):
     d = {}
-    for col in COLUMNS_WITH_TIMESTAMP:
+    for col in columns:
         d[col] = data[col]
     return pd.DataFrame(data=d)
+
+
+def remove_nocturnal_data(data, start=8, end=16):
+    indexes = []
+    data = data.reset_index(drop=True)
+    for i in range(len(data)):
+        timestamp = data['Timestamp'][i]
+        if timestamp.hour < start or end < timestamp.hour:
+            indexes.append(i)
+
+    data.drop(indexes, inplace=True)
+    data = data.reset_index(drop=True)
+    return data
+
+
+def remove_missing_values(data):
+    for col in COLUMNS:
+        data.drop(data[np.isnan(data[col])].index, inplace=True)
+        data.drop(data[data[col] == 0.0].index, inplace=True)
+
+    data = data.reset_index(drop=True)
+    return data
 
 
 def import_dataset(dataset_name, averaged=True):
@@ -110,32 +134,25 @@ def import_dataset(dataset_name, averaged=True):
         print('Read data from ' + get_file_name(dataset_name))
         data = np.genfromtxt(get_file_path(dataset_name), dtype=datatype, delimiter=',', names=True)
         data = convert_to_data_frame(data)
+        data = remove_missing_values(data)
+        data['Kb'] = data['FD_Avg']/data['FG_Avg']
         data.to_pickle(file_name)
 
     if averaged:
         print("Averaging data")
         avg_data = average_all_data(data)
-        convert_to_data_frame(avg_data).to_pickle(averaged_file_name)
+        columns = COLUMNS_WITH_TIMESTAMP + NEW_COLUMNS
+        convert_to_data_frame(avg_data, columns).to_pickle(averaged_file_name)
         return avg_data
 
     return data
 
 
-def remove_nocturnal_data(data, start=8, end=16):
-    indexes = []
-    for i in range(len(data)):
-        timestamp = data['Timestamp'][i]
-        if timestamp.hour < start or end < timestamp.hour:
-            indexes.append(i)
-
-    data.drop(indexes, inplace=True)
-    data = data.reset_index(drop=True)
-    return data
+def main():
+    # generate all cached data
+    for dataset in DATASETS[-2:]:
+        import_dataset(dataset)
 
 
-def remove_missing_values(data):
-    for col in COLUMNS:
-        data.drop(data[np.isnan(data[col])].index, inplace=True)
-
-    data = data.reset_index(drop=True)
-    return data
+if __name__ == "__main__":
+    main()

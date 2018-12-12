@@ -31,17 +31,19 @@ def draw_box_plot_monthly(timestamps, data, title=''):
 
 def draw_all_box_plots(data, dataset_prefix=''):
     timestamps = data['Timestamp']
-    for col in COLUMNS:
+    columns = COLUMNS + NEW_COLUMNS
+    for col in columns:
         draw_box_plot_yearly(timestamps, data[col], dataset_prefix + col)
         draw_box_plot_monthly(timestamps, data[col], dataset_prefix + col)
 
 
 def calculate_correlations(data):
-    correlations = np.zeros((len(COLUMNS), len(COLUMNS)))
-    for i in range(len(COLUMNS)-1):
-        col1 = COLUMNS[i]
-        for j in range(i+1, len(COLUMNS)):
-            col2 = COLUMNS[j]
+    columns = COLUMNS + NEW_COLUMNS
+    correlations = np.zeros((len(columns), len(columns)))
+    for i in range(len(columns)-1):
+        col1 = columns[i]
+        for j in range(i+1, len(columns)):
+            col2 = columns[j]
             correlations[i][j] = np.corrcoef(data[col1], data[col2])[0][1]
     return correlations
 
@@ -49,8 +51,9 @@ def calculate_correlations(data):
 def plot_correlations(data, dataset_prefix=''):
     correlations = calculate_correlations(data)
     plt.clf()
+    columns = COLUMNS + NEW_COLUMNS
     sns.heatmap(correlations, cmap=CMAP, vmax=.3, center=0, square=True, linewidths=.5, cbar_kws={"shrink": .5},
-                xticklabels=COLUMNS, yticklabels=COLUMNS, annot=True)
+                xticklabels=columns, yticklabels=columns, annot=True)
     plt.savefig(GRAPHS_PATH + dataset_prefix + 'correlations.png')
     print('\tSaved plot: ' + dataset_prefix + 'correlations.png')
 
@@ -59,8 +62,8 @@ def main():
     for dataset_name in DATASETS:
         print('Working on dataset: ' + dataset_name)
         data = import_dataset(dataset_name, False)
-        # draw_all_box_plots(data, dataset_name+'_')
-        # plot_correlations(data, dataset_name + '_')
+        draw_all_box_plots(data, dataset_name+'_')
+        plot_correlations(data, dataset_name + '_')
         print('Averaging data')
         avg_data = import_dataset(dataset_name)
         avg_data = remove_missing_values(avg_data)

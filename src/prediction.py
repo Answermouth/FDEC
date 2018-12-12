@@ -16,7 +16,7 @@ import warnings
 warnings.simplefilter("ignore")
 
 
-COLUMN_TO_PREDICT = 'FD_Avg'
+COLUMN_TO_PREDICT = 'Kb'
 dtype = [('Timestamp', np.datetime64('1970-01-01 00:00:00')), ('FD_Avg', np.float32)]
 
 
@@ -35,7 +35,7 @@ def evaluate_model_prediction(series, train_size=48, max_evals=1000, offset=0, o
         output = model_fit.forecast().iloc[-1]
 
         predictions.append(output)
-        observations.append(series[i - 1])
+        observations.append(series.iloc[i - 1])
 
     scoring = mean_squared_error(observations, predictions)
 
@@ -68,23 +68,24 @@ def try_orders(series):
 
 def get_series(data):
     data = data[539:]
-    avg_data = remove_missing_values(data)
-    avg_data = remove_nocturnal_data(avg_data)
+    # data = remove_nocturnal_data(data)
     """
     min_max_scaler = preprocessing.MinMaxScaler()
     series = min_max_scaler.fit_transform(avg_data[COLUMN_TO_PREDICT].values.reshape(-1, 1))"""
 
-    series = avg_data[COLUMN_TO_PREDICT]/avg_data[COLUMNS[0]]
+    print(data[data['Kb'] == float('inf')]['FD_Avg'], data[data['Kb'] == float('inf')]['FG_Avg'], data[data['Kb'] == float('inf')]['Kb'])
+    series = data[COLUMN_TO_PREDICT]
     return series
 
 
 def main():
     print("Start")
-    COLUMNS.remove(COLUMN_TO_PREDICT)
+    DATASETS = ["SaintLeu", "SaintPierre"]
     scores = []
     for dataset in DATASETS:
         print(dataset)
-        series = get_series(import_dataset(dataset, True))
+        data = import_dataset(dataset, False)
+        series = get_series(data)
         print("\tLenght:", len(series), "| MIN:", np.min(series), "| MAX:", np.max(series), "| RMSE:", np.average(series), "| std:", np.std(series))
         plt.plot(series)
         score = cross_val(series)
