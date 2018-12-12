@@ -32,7 +32,7 @@ def draw_box_plot_monthly(timestamps, data, title=''):
 def draw_all_box_plots(data, dataset_prefix=''):
     timestamps = data['Timestamp']
     for col in COLUMNS:
-        # draw_box_plot_yearly(timestamps, data[col], dataset_prefix + col)
+        draw_box_plot_yearly(timestamps, data[col], dataset_prefix + col)
         draw_box_plot_monthly(timestamps, data[col], dataset_prefix + col)
 
 
@@ -59,10 +59,16 @@ def main():
     for dataset_name in DATASETS:
         print('Working on dataset: ' + dataset_name)
         data = import_dataset(dataset_name, False)
-        draw_all_box_plots(data, dataset_name+'_')
-        plot_correlations(data, dataset_name + '_')
+        # draw_all_box_plots(data, dataset_name+'_')
+        # plot_correlations(data, dataset_name + '_')
         print('Averaging data')
-        plot_correlations(average_all_data(data), dataset_name + '_averaged_')
+        avg_data = import_dataset(dataset_name)
+        avg_data = remove_missing_values(avg_data)
+        plot_correlations(avg_data, dataset_name + '_averaged_')
+        print('Removing nocturnal data')
+        day_data = remove_nocturnal_data(avg_data)
+        draw_all_box_plots(day_data, dataset_name + '_day_')
+        plot_correlations(day_data, dataset_name + '_day_')
         print('')
 
 

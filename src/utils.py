@@ -22,7 +22,6 @@ datatype = [('Timestamp', np.datetime64('1970-01-01T00:00:00')),
 COLUMNS_WITH_TIMESTAMP = ['Timestamp', 'FD_Avg', 'FG_Avg', 'Patm_Avg', 'RH_Avg', 'Text_Avg', 'WD_MeanUnitVector', 'WS_Mean']
 COLUMNS = ['FD_Avg', 'FG_Avg', 'Patm_Avg', 'RH_Avg', 'Text_Avg', 'WD_MeanUnitVector', 'WS_Mean']
 DATASETS = ["Moufia", "Possession", "SaintAndre", "SaintLeu", "SaintPierre"]
-# DATASETS = ["SaintLeu", "SaintPierre"]
 GRAPHS_PATH = '../graphs/'
 
 
@@ -44,7 +43,7 @@ def split_data_set(timestamps, data, period=ONE_YEAR):
     selected_timestamps = []
     splits = []
     while i < len(timestamps):
-        selected_timestamps.append(timestamps[i])
+        selected_timestamps.append(timestamps[i].round('H'))
         splits.append([])
         while i < len(timestamps) and timestamps[i] < selected_timestamps[j]+period:
             splits[j].append(data[i])
@@ -119,4 +118,24 @@ def import_dataset(dataset_name, averaged=True):
         convert_to_data_frame(avg_data).to_pickle(averaged_file_name)
         return avg_data
 
+    return data
+
+
+def remove_nocturnal_data(data, start=8, end=16):
+    indexes = []
+    for i in range(len(data)):
+        timestamp = data['Timestamp'][i]
+        if timestamp.hour < start or end < timestamp.hour:
+            indexes.append(i)
+
+    data.drop(indexes, inplace=True)
+    data = data.reset_index(drop=True)
+    return data
+
+
+def remove_missing_values(data):
+    for col in COLUMNS:
+        data.drop(data[np.isnan(data[col])].index, inplace=True)
+
+    data = data.reset_index(drop=True)
     return data
