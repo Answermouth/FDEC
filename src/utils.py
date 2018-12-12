@@ -23,7 +23,7 @@ COLUMNS_WITH_TIMESTAMP = ['Timestamp', 'FD_Avg', 'FG_Avg', 'Patm_Avg', 'RH_Avg',
 COLUMNS = ['FD_Avg', 'FG_Avg', 'Patm_Avg', 'RH_Avg', 'Text_Avg', 'WD_MeanUnitVector', 'WS_Mean']
 NEW_COLUMNS = ['Kb']
 DATASETS = ["Moufia", "Possession", "SaintAndre", "SaintLeu", "SaintPierre"]
-GRAPHS_PATH = '../graphs/cleaned/'
+GRAPHS_PATH = '../graphs/shifted/'
 
 
 def get_folder_name(dataset_name):

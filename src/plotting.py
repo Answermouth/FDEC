@@ -49,6 +49,10 @@ def calculate_correlations(data):
 
 
 def plot_correlations(data, dataset_prefix=''):
+    data['FD_Avg'] = data['FD_Avg'].shift(-1)
+    data['FG_Avg'] = data['FG_Avg'].shift(-1)
+    data['Kb'] = data['Kb'].shift(-1)
+    data = data[:-1]
     correlations = calculate_correlations(data)
     plt.clf()
     columns = COLUMNS + NEW_COLUMNS
@@ -62,15 +66,16 @@ def main():
     for dataset_name in DATASETS:
         print('Working on dataset: ' + dataset_name)
         data = import_dataset(dataset_name, False)
-        draw_all_box_plots(data, dataset_name+'_')
+        # draw_all_box_plots(data, dataset_name+'_')
         plot_correlations(data, dataset_name + '_')
         print('Averaging data')
         avg_data = import_dataset(dataset_name)
         avg_data = remove_missing_values(avg_data)
+        # draw_all_box_plots(data, dataset_name + '_averaged_')
         plot_correlations(avg_data, dataset_name + '_averaged_')
         print('Removing nocturnal data')
         day_data = remove_nocturnal_data(avg_data)
-        draw_all_box_plots(day_data, dataset_name + '_day_')
+        # draw_all_box_plots(day_data, dataset_name + '_day_')
         plot_correlations(day_data, dataset_name + '_day_')
         print('')
 

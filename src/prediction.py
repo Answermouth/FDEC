@@ -9,6 +9,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_validate, train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.stattools import pacf, acf, adfuller
 import matplotlib.pyplot as plt
 from pandas.plotting import autocorrelation_plot
 import datetime
@@ -33,11 +34,17 @@ def evaluate_model_prediction(series, train_size=48, max_evals=1000, offset=0, o
                         enforce_stationarity=False, enforce_invertibility=False)
         model_fit = model.fit(disp=0)
         output = model_fit.forecast().iloc[-1]
+        # output = model_fit.forecast()[0]
 
         predictions.append(output)
         observations.append(series.iloc[i - 1])
+        # observations.append(series[i - 1])
 
     scoring = mean_squared_error(observations, predictions)
+
+    plt.plot(observations)
+    plt.plot(predictions, color='red')
+    plt.show()
 
     return scoring
 
@@ -71,30 +78,39 @@ def get_series(data):
     # data = remove_nocturnal_data(data)
     """
     min_max_scaler = preprocessing.MinMaxScaler()
-    series = min_max_scaler.fit_transform(avg_data[COLUMN_TO_PREDICT].values.reshape(-1, 1))"""
+    series = min_max_scaler.fit_transform(data[COLUMN_TO_PREDICT].values.reshape(-1, 1))"""
 
-    print(data[data['Kb'] == float('inf')]['FD_Avg'], data[data['Kb'] == float('inf')]['FG_Avg'], data[data['Kb'] == float('inf')]['Kb'])
     series = data[COLUMN_TO_PREDICT]
     return series
 
 
 def main():
     print("Start")
-    DATASETS = ["SaintLeu", "SaintPierre"]
+    # DATASETS = ["SaintLeu", "SaintPierre"]
     scores = []
+    scores2 = []
     for dataset in DATASETS:
         print(dataset)
-        data = import_dataset(dataset, False)
+        data = import_dataset(dataset)
         series = get_series(data)
-        print("\tLenght:", len(series), "| MIN:", np.min(series), "| MAX:", np.max(series), "| RMSE:", np.average(series), "| std:", np.std(series))
-        plt.plot(series)
-        score = cross_val(series)
+        # autocorrelation_plot(series)
+        # plt.plot(acf(series, nlags=72))
+        # plt.plot(pacf(series, nlags=72))
+
+        # plt.figure()
+
+        print("\tLenght:", len(series), "| MIN:", np.min(series), "| MAX:", np.max(series), "| mean:", np.average(series), "| std:", np.std(series))
+        score = cross_val(series, order=(1, 2, 0), k=1)
         scores = scores+score
+        score = cross_val(series, order=(1, 1, 0), k=1)
+        scores2 = scores2 + score
         print()
 
     print("RMSE:", np.average(scores), "| std:", np.std(scores))
-    plt.show()
+    print("RMSE:", np.average(scores2), "| std:", np.std(scores2))
+    #plt.show()
 
 
 if __name__ == "__main__":
     main()
+
